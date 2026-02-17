@@ -1,1 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>SpotSusufy</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 
+<style>
+body{
+  font-family:Arial, sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  color:white;
+  overflow:hidden;
+  margin:0;
+
+  background: linear-gradient(
+      rgba(0,0,0,0.45),
+      rgba(0,0,0,0.45)
+    ),
+    url("PON_AQUI_LINK_DE_CINNAMOROLL");
+
+  background-size:contain;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-attachment:fixed;
+  background-color:#000;
+}
+
+.heart{
+  position:fixed;
+  bottom:-20px;
+  font-size:18px;
+  animation:float 8s linear infinite;
+  opacity:0.7;
+}
+
+@keyframes float{
+  from{transform:translateY(0)}
+  to{transform:translateY(-110vh)}
+}
+
+.player{
+  width:330px;
+  text-align:center;
+  padding:20px;
+  border-radius:20px;
+  backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.1);
+  box-shadow:0 8px 30px rgba(0,0,0,0.4);
+}
+
+.titulo{
+  font-family:'Pacifico', cursive;
+  font-size:34px;
+}
+
+.cover{
+  width:220px;
+  height:220px;
+  object-fit:cover;
+  border-radius:15px;
+  margin-bottom:10px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.5);
+}
+
+.playing{
+  animation:spin 14s linear infinite;
+}
+
+@keyframes spin{
+  from{transform:rotate(0)}
+  to{transform:rotate(360deg)}
+}
+
+.song{
+  margin:8px 0;
+  font-weight:bold;
+}
+
+.time{
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+}
+
+input[type="range"]{
+  width:100%;
+  accent-color:white;
+}
+
+.controls{
+  margin-top:15px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:25px;
+}
+
+button{
+  border:none;
+  background:none;
+  font-size:26px;
+  cursor:pointer;
+  color:white;
+  transition:.2s;
+}
+
+button:hover{
+  transform:scale(1.2);
+}
+
+.play{
+  width:70px;
+  height:70px;
+  border:5px solid white;
+  border-radius:50%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:rgba(255,255,255,0.2);
+}
+
+.message{
+  margin-top:10px;
+  font-size:14px;
+  opacity:.9;
+}
+
+.eq{
+  display:flex;
+  justify-content:center;
+  gap:4px;
+  margin-top:8px;
+}
+
+.bar{
+  width:5px;
+  height:10px;
+  background:white;
+  animation:beat 0.6s infinite alternate;
+}
+
+.bar:nth-child(2){animation-delay:.1s}
+.bar:nth-child(3){animation-delay:.2s}
+.bar:nth-child(4){animation-delay:.3s}
+
+@keyframes beat{
+  from{height:6px}
+  to{height:20px}
+}
+
+.lyrics{
+  margin-top:8px;
+  font-size:13px;
+  opacity:.85;
+}
+</style>
+</head>
+
+<body>
+
+<div class="player">
+
+<h2 class="titulo">SpotSusufy 🤍</h2>
+
+<img id="cover" class="cover" src="">
+
+<div class="song" id="songName"></div>
+
+<div class="time">
+<span id="current">0:00</span>
+<span id="duration">0:00</span>
+</div>
+
+<input type="range" id="progress" value="0">
+
+<div class="controls">
+<button onclick="prevSong()">⏮</button>
+<button class="play" onclick="playPause()" id="playBtn">▶️</button>
+<button onclick="nextSong()">⏭</button>
+</div>
+
+<div class="eq">
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
+</div>
+
+<div class="lyrics" id="lyrics"></div>
+<div class="message" id="message"></div>
+
+<audio id="audio"></audio>
+
+</div>
+
+<script>
+const songs = [
+{name:"Canción 1", file:"LINK_AUDIO_1", cover:"LINK_IMG_1"},
+{name:"Canción 2", file:"LINK_AUDIO_2", cover:"LINK_IMG_2"},
+{name:"Canción 3", file:"LINK_AUDIO_3", cover:"LINK_IMG_3"},
+{name:"Canción 4", file:"LINK_AUDIO_4", cover:"LINK_IMG_4"},
+{name:"Por ti", file:"https://youtu.be/jfIKGV_J7GM?si=EiiCuWkZ36FMPi-n", cover:""},
+{name:"Canción 6", file:"LINK_AUDIO_6", cover:"LINK_IMG_6"},
+{name:"Canción 7", file:"LINK_AUDIO_7", cover:"LINK_IMG_7"},
+{name:"Canción 8", file:"LINK_AUDIO_8", cover:"LINK_IMG_8"},
+{name:"Canción 9", file:"LINK_AUDIO_9", cover:"LINK_IMG_9"},
+{name:"Canción 10", file:"LINK_AUDIO_10", cover:"LINK_IMG_10"},
+{name:"Canción 11", file:"LINK_AUDIO_11", cover:"LINK_IMG_11"},
+{name:"Canción 12", file:"LINK_AUDIO_12", cover:"LINK_IMG_12"},
+{name:"Canción 13", file:"LINK_AUDIO_13", cover:"LINK_IMG_13"},
+{name:"Canción 14", file:"LINK_AUDIO_14", cover:"LINK_IMG_14"},
+{name:"Canción 15", file:"LINK_AUDIO_15", cover:"LINK_IMG_15"},
+{name:"Canción 16", file:"LINK_AUDIO_16", cover:"LINK_IMG_16"},
+{name:"Canción 17", file:"LINK_AUDIO_17", cover:"LINK_IMG_17"},
+{name:"Canción 18", file:"LINK_AUDIO_18", cover:"LINK_IMG_18"},
+{name:"Canción 19", file:"LINK_AUDIO_19", cover:"LINK_IMG_19"},
+{name:"Canción 20", file:"LINK_AUDIO_20", cover:"LINK_IMG_20"}
+];
+
+let index = 0;
+
+const audio = document.getElementById("audio");
+const progress = document.getElementById("progress");
+const songName = document.getElementById("songName");
+const playBtn = document.getElementById("playBtn");
+const cover = document.getElementById("cover");
+const current = document.getElementById("current");
+const duration = document.getElementById("duration");
+
+function loadSong(){
+audio.src = songs[index].file;
+songName.innerText = songs[index].name;
+cover.src = songs[index].cover;
+document.getElementById("message").innerText =
+"Esta canción me recuerda a ti 🤍";
+}
+
+function playPause(){
+if(audio.paused){
+audio.play();
+playBtn.innerText="⏸";
+cover.classList.add("playing");
+}else{
+audio.pause();
+playBtn.innerText="▶️";
+cover.classList.remove("playing");
+}
+}
+
+function nextSong(){
+index=(index+1)%songs.length;
+cover.classList.remove("playing");
+loadSong();
+audio.play();
+playBtn.innerText="⏸";
+cover.classList.add("playing");
+}
+
+function prevSong(){
+index=(index-1+songs.length)%songs.length;
+cover.classList.remove("playing");
+loadSong();
+audio.play();
+playBtn.innerText="⏸";
+cover.classList.add("playing");
+}
+
+audio.addEventListener("timeupdate",()=>{
+progress.value=(audio.currentTime/audio.duration)*100||0;
+current.innerText=formatTime(audio.currentTime);
+duration.innerText=formatTime(audio.duration);
+});
+
+progress.addEventListener("input",()=>{
+audio.currentTime=(progress.value/100)*audio.duration;
+});
+
+audio.addEventListener("ended",nextSong);
+
+function formatTime(sec){
+if(!sec) return "0:00";
+let m=Math.floor(sec/60);
+let s=Math.floor(sec%60).toString().padStart(2,"0");
+return m+":"+s;
+}
+
+setInterval(()=>{
+let heart=document.createElement("div");
+heart.className="heart";
+heart.style.left=Math.random()*100+"vw";
+heart.innerText="🤍";
+document.body.appendChild(heart);
+setTimeout(()=>heart.remove(),8000);
+},1200);
+
+loadSong();
+</script>
+
+</body>
+</html>
